@@ -12394,8 +12394,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
     console.log(12);
-    var firstDiv = $('#pf1').text();
-    // console.log(firstDiv);
+    var firstDiv = $('#pf1').text().replace(/\s\s+/gim, '');
+    console.log(firstDiv);
+
     var testTitle = firstDiv.match(/.*\wpaper \d|English .* paper \d/gim);
     var instructions = firstDiv.replace(/(Instructions)/gim, '\n$1').match(/Instructions .*/gim)
     var testDuration = firstDiv.match(/(\d hour \d\d minutes)|(\d hour)/gim);
@@ -12412,7 +12413,7 @@
 
     // var addLine = removeDots.replace(/\D(\d\. |\d\d\. |[A-Z]\d\.|)/gm, '\n$1');
     var addLine = removeDots.replace(/\D(\d\. |\d\d\. |[A-Z]\d\.|\([a-f]\) |\([h-z]\) |\W\(i\)|\(ii\)|\(iii\))/gm, '\n$1');
-    console.log(addLine);
+    // console.log(addLine);
 
     var removeGibberish = addLine.replace(/\[\d\]|\[\d|Option .+|– \d.+|\(This question .+/gim, '');
     // console.log(removeGibberish);
@@ -12428,17 +12429,9 @@
     var questionPartNumber = removeGibberish.match(/(\([a-g])\)/gim);
 
     var res = removeGibberish.match(/((\d|\d\d|[A-Z]\d)\. .*)/gim);
-    console.log(res);
+    // console.log(res);
 
-    // var subQuestions = removeGibberish.match(/\([a-z]\).*/gim);
-    // console.log(subQuestions);
-
-    for (var i = 0; i < subQuestions.length; i++) {
-        // console.log(subQuestions[0]);
-    }
-
-    // var subparts = removeGibberish.match(/\(i\).*|\(ii\).*|\(iii\).*/gim);
-    // console.log(subparts);
+    
 
     </script>
 </body>
