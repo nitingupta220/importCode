@@ -6,11 +6,12 @@ const app = express();
 
 app.get('/', function(req, res) {
 
-    let url = 'http://127.0.0.1:8080/';
+    let url = 'http://127.0.0.1:34181/';
 
     request(url, function(error, response, html) {
         if (!error) {
             var $ = cheerio.load(html);
+
             var text = ($.text());
             // console.log(text);
             var json = {
@@ -26,6 +27,7 @@ app.get('/', function(req, res) {
                 parts: [],
             }
             var firstDiv = $('#pf1').text().replace(/\s\s+/gim, '');
+            // console.log(firstDiv);
 
             var testTitle = firstDiv.match(/.*\wpaper \d|English .* paper \d/gim);
             json.title = testTitle;
@@ -33,7 +35,7 @@ app.get('/', function(req, res) {
             var instructions = firstDiv.replace(/(Instructions)/gim, '\n$1').match(/Instructions .*/gim);
             json.instructions = instructions;
 
-            var testDuration = firstDiv.match(/(\d hour \d\d minutes)|(\d hour)/gim);
+            var testDuration = firstDiv.match(/(\d hour \d\d minutes)|(\d hour)|(\d\d minutes)/gim);
             json.duration = testDuration;
 
             var testDate = firstDiv.match(/(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) \d+ \w+ \d+/gim);
@@ -41,29 +43,41 @@ app.get('/', function(req, res) {
 
 
             var removeFirstDiv = $('#pf1').nextAll().text();
+            // console.log(removeFirstDiv);
 
             var removeSpace = removeFirstDiv.replace(/\s\s+/gim, '  ');
 
             var removeDots = removeSpace.replace(/\.\.\.*/gim, ' ');
+            // console.log(removeDots);
 
             var addLine = removeDots.replace(/\D(\d\. |\d\d\. |[A-Z]\d\.)/gm, '\n$1');
+            // console.log(addLine);
 
+            // var removeGibberish = addLine.replace(/\[\d\]|\[\d|Option .+|– \d.+|\(This question .+/gim, '');
+            var removeGibberish = addLine.replace(/\[\d\]|\[\d|Option .+/gim, '');
 
-            var removeGibberish = addLine.replace(/\[\d\]|\[\d|Option .+|– \d.+|\(This question .+/gim, '');
+            // console.log(removeGibberish);
 
             var res = removeGibberish.match(/((\d|\d\d|[A-Z]\d)\. .*)/gim);
+            console.log(res);
 
             if (res && res.length > 0) {
                 for (var i = 0; i < res.length; i++) {
                     question_temp.index = i;
 
-                    var subParts = res[i].replace(/(\([a-h]\))/g, '\n$1');
+                    var subParts = res[i].replace(/(  \([a-z]\)|[A-D]\. |\(a\))/gm, '\n$1');
+                    // console.log(subParts);
 
-                    question_temp.content = subParts.match(/((\d|\d\d|[A-Z]\d)\. .*)/gim)[0];
+                    var removeSubPartsGibberish = subParts.replace(/(– \d.+|\(This question .+)/gm, '');
+                    // console.log(removeSubPartsGibberish);
+
+                    question_temp.content = removeSubPartsGibberish.match(/((\d|\d\d|[A-Z]\d)\. .*)/gim)[0];
+                    // console.log(question_temp.content);
 
                     var subPartsArray = [];
 
-                    subPartsArray = subParts.match(/\([a-h]\).*/gim);
+                    subPartsArray = removeSubPartsGibberish.match(/\([a-z]\).*|[A-D]\. .*/gim);
+                    // console.log(subPartsArray);
 
                     if (subPartsArray && subPartsArray.length > 0) {
 
@@ -78,8 +92,12 @@ app.get('/', function(req, res) {
                             question_temp1.index = j;
 
                             var nestedSubParts = [];
+
+                            // adding line before every (i), (ii) and (iii)
                             var newI = subPartsArray[j].replace(/\(i\)|\(ii\)|\(iii\)/gim, '\n$&');
-                            var ss = newI.match(/(\([a-h]\) .*)/g);
+
+                            var ss = newI.match(/(\([a-f]\) .*|[A-D]\. .*)/g);
+                            // console.log(ss);
                             if (ss == null) {
                                 question_temp1.content = ss;
                             } else {
@@ -107,6 +125,7 @@ app.get('/', function(req, res) {
                             }
 
                             question_temp.parts.push(question_temp1);
+                            // console.log(question_temp1);
                             question_temp1 = {
                                 index: '',
                                 content: '',
@@ -136,7 +155,7 @@ app.get('/', function(req, res) {
 
 })
 
-app.listen(8091);
-console.log('Magic happens on port 8091');
+app.listen(3131);
+console.log('Magic happens on port 3131');
 
 exports = module.exports = app;

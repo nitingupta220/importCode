@@ -12395,7 +12395,7 @@
     <script>
     console.log(12);
     var firstDiv = $('#pf1').text().replace(/\s\s+/gim, '');
-    console.log(firstDiv);
+    // console.log(firstDiv);
 
     var testTitle = firstDiv.match(/.*\wpaper \d|English .* paper \d/gim);
     var instructions = firstDiv.replace(/(Instructions)/gim, '\n$1').match(/Instructions .*/gim)
@@ -12412,8 +12412,8 @@
     // console.log(removeDots);
 
     // var addLine = removeDots.replace(/\D(\d\. |\d\d\. |[A-Z]\d\.|)/gm, '\n$1');
-    var addLine = removeDots.replace(/\D(\d\. |\d\d\. |[A-Z]\d\.|\([a-f]\) |\([h-z]\) |\W\(i\)|\(ii\)|\(iii\))/gm, '\n$1');
-    // console.log(addLine);
+    var addLine = removeDots.replace(/(\d\. |\d\d\. |[A-Z]\d\.|\([a-f]\) |\([h-z]\) |\W\(i\)|\(ii\)|\(iii\))/gm, '\n$1');
+    console.log(addLine);
 
     var removeGibberish = addLine.replace(/\[\d\]|\[\d|Option .+|– \d.+|\(This question .+/gim, '');
     // console.log(removeGibberish);
@@ -12430,7 +12430,6 @@
 
     var res = removeGibberish.match(/((\d|\d\d|[A-Z]\d)\. .*)/gim);
     // console.log(res);
-
     
 
     </script>
